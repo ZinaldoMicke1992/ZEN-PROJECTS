@@ -1,84 +1,333 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZenInterface</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zinaldo Quantum Dev</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: black;
+      color: #aaffaa;
+      overflow-x: hidden;
+    }
+
+    canvas#matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    header {
+      position: fixed;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      border-bottom: 1px solid #00ff88;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      z-index: 2;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #aaffaa;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #00ff88;
+      font-weight: bold;
+      position: relative;
+      transition: color 0.3s ease-in-out;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 100%;
+      height: 2px;
+      background: #00ff88;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    nav a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    nav a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 5px #00ff88;
+    }
+
+    .burger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .burger div {
+      width: 25px;
+      height: 3px;
+      background-color: #00ff88;
+      margin: 4px;
+      transition: all 0.3s;
+    }
+
+    .nav-active {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: black;
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      padding: 20px;
+      border: 1px solid #00ff88;
+      border-radius: 10px;
+      z-index: 2;
+    }
+
+    .hero {
+      padding-top: 120px;
+      text-align: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero img {
+      border-radius: 10px;
+      width: 200px;
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    .hero h2 {
+      font-size: 2rem;
+      margin: 0.5rem 0;
+      color: #caffca;
+      animation: flicker 2s infinite alternate;
+    }
+
+    .hero h3 {
+      font-weight: normal;
+      color: #88ff88;
+    }
+
+    .btn {
+      margin-top: 1rem;
+      padding: 0.7rem 1.2rem;
+      background: #00ff88;
+      border: none;
+      border-radius: 25px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #00cc66;
+    }
+
+    .section {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #00ff88;
+      border-radius: 10px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section h3 {
+      border-bottom: 1px solid #00ff88;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+      animation: flicker 2s infinite alternate;
+    }
+
+    .item {
+      padding: 10px 0;
+      border-left: 3px solid #00ff88;
+      margin: 10px 0;
+      padding-left: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #55ff55;
+      font-size: 0.8rem;
+    }
+
+    @keyframes flicker {
+      0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 2px #0f0, 0 0 4px #0f0, 0 0 6px #0f0;
+        opacity: 1;
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+        opacity: 0.8;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .burger {
+        display: flex;
+      }
+      nav {
+        display: none;
+      }
+      nav.show {
+        display: flex;
+      }
+    }
+
+    a {
+      color: #00ff88;
+    }
+
+    .fa {
+      margin-right: 8px;
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <h1 class="logo">ZenInterface</h1>
-      <nav class="nav">
-        <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
+  <canvas id="matrix"></canvas>
+
+  <header>
+    <h1>Zinaldo Dev</h1>
+    <div class="burger" id="burger">
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
+    <nav id="nav">
+      <a href="#profil">Profil</a>
+      <a href="#competences">Compétences</a>
+      <a href="#formation">Formation</a>
+      <a href="#experience">Expériences</a>
+      <a href="#contact">Contact</a>
+    </nav>
   </header>
 
-  <!-- Hero Section -->
   <section class="hero">
-    <div class="container">
-      <h2 class="hero-title">Welcome to ZenInterface</h2>
-      <p class="hero-description">Elevate your web presence with modern design and seamless functionality.</p>
-      <a href="#projects" class="btn">Explore More</a>
-    </div>
+    <img src="maphoto.png" alt="Zinaldo Quantum Dev" />
+    <h2>Zinaldo Quantum Dev</h2>
+    <h3>Développeur Web Fullstack & Web Designer</h3>
+    <a class="btn" href="cv.pdf" download>Télécharger CV</a>
   </section>
 
-  <!-- About Section -->
-  <section id="about" class="section">
-    <div class="container">
-      <h2 class="section-title">About Me</h2>
-      <p class="section-description">
-        I am a Front-End Developer with a passion for crafting visually stunning and functional user experiences. Using
-        technologies like React, TailwindCSS, and responsive design, I aim to deliver polished and professional web solutions.
-      </p>
-    </div>
+  <section class="section" id="profil">
+    <h3>Profil Professionnel</h3>
+    <p class="item">Développeur fullstack passionné, à la croisée du code et du design. J’allie expertise technique et sens esthétique pour concevoir des expériences web modernes, immersives et performantes.</p>
   </section>
 
-  <!-- Projects Section -->
-  <section id="projects" class="section bg-light">
-    <div class="container">
-      <h2 class="section-title">Projects</h2>
-      <div class="projects-grid">
-        <div class="project-card">
-          <h3>Zen Portfolio</h3>
-          <p>This project demonstrates modern web development techniques using React and TailwindCSS.</p>
-        </div>
-        <div class="project-card">
-          <h3>E-Commerce Dashboard</h3>
-          <p>This project demonstrates modern web development techniques using React and TailwindCSS.</p>
-        </div>
-        <div class="project-card">
-          <h3>Responsive Blog</h3>
-          <p>This project demonstrates modern web development techniques using React and TailwindCSS.</p>
-        </div>
-      </div>
-    </div>
+  <section class="section" id="competences">
+    <h3>Compétences</h3>
+    <p class="item">Frontend : HTML, CSS, JavaScript, React, TailwindCSS</p>
+    <p class="item">Backend : Node.js, Express, Python, FastAPI</p>
+    <p class="item">Base de données : MySQL, PostgreSQL, MongoDB</p>
+    <p class="item">Informatique Quantique : Qiskit, concepts clés</p>
+    <p class="item">Autres : Docker, Git, GitHub, Figma, Photoshop</p>
   </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="section">
-    <div class="container text-center">
-      <h2 class="section-title">Get in Touch</h2>
-      <p class="section-description">Interested in working together? Feel free to reach out.</p>
-      <a href="libra.zinaldo1992@gmail.com" class="btn">Contact Me</a>
-    </div>
+  <section class="section" id="formation">
+    <h3>Formation</h3>
+    <p class="item">Licence en Informatique – ENIA Madagascar – 2015</p>
+    <p class="item">DTS en Informatique – ENIA Madagascar – 2014</p>
+    <p class="item">Baccalauréat – Lycée Vitale Ankadindramamy – 2012</p>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container text-center">
-      <p>&copy; 2025 Zinaldo Micke Ramanakavana. All rights reserved.</p>
-    </div>
+  <section class="section" id="experience">
+    <h3>Expériences</h3>
+    <p class="item">Freelance Fullstack Developer – Antananarivo – 2014–2023</p>
+    <p class="item">Projets : sites vitrines, applis interactives, intégration Figma, déploiement Vercel/Netlify</p>
+    <p class="item">Portfolio “Zinaldo QUANTUM DEV” – Thème Matrix – 2024</p>
+  </section>
+
+  <section class="section" id="contact">
+    <h3>Contact</h3>
+    <p class="item"><i class="fa fa-envelope"></i> <a href="mailto:zinaldoquantumdev@gmail.com" target="_blank">zinaldoquantumdev@gmail.com</a></p>
+    <p class="item"><i class="fa fa-phone"></i> <a href="tel:+261386710185">+261 38 67 101 85</a></p>
+    <p class="item"><i class="fab fa-github"></i> <a href="https://github.com/ZinaldoMicke1992" target="_blank">github.com/ZinaldoMicke1992</a></p>
+    <p class="item"><i class="fab fa-linkedin"></i> <a href="https://linkedin.com/in/zinaldo-micke-angelain-ramanakavana" target="_blank">linkedin.com/in/zinaldo</a></p>
+    <p class="item"><i class="fab fa-facebook"></i> <a href=https://www.facebook.com/profile.php?id=61573088739975" target="_blank">facebook.com/zinaldo.ramanakavana</a></p>
+  </section>
+
+  <footer>
+    &copy; 2025 Zinaldo Quantum Dev. Tous droits réservés.
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    // Matrix rain
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    const letters = "アァイィウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }, () => 1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00ff00";
+      ctx.font = fontSize + "px monospace";
+      drops.forEach((y, i) => {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, y * fontSize);
+        if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      });
+    }
+    setInterval(drawMatrix, 50);
+
+    // Scroll reveal
+    const sections = document.querySelectorAll('.section');
+    function revealOnScroll() {
+      const triggerBottom = window.innerHeight * 0.85;
+      sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        if (sectionTop < triggerBottom) section.classList.add('visible');
+      });
+    }
+
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('load', revealOnScroll);
+
+    // Burger menu toggle
+    const burger = document.getElementById('burger');
+    const nav = document.getElementById('nav');
+    burger.addEventListener('click', () => {
+      nav.classList.toggle('show');
+    });
+  </script>
 </body>
 </html>
+
+
